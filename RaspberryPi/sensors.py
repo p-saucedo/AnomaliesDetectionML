@@ -27,7 +27,9 @@ class Sensor():
 
         return values
 
-    @abstractmethod
+    def get_sensor_stats(self, hour):
+        return self.distribution.evaluate(x = hour)
+
     def get_value(self, hour):
         if hour >= 0.0 and hour <= 23.59:
             _, y_min, y_max = self.distribution.evaluate(x=hour)
@@ -35,6 +37,20 @@ class Sensor():
         else:
             print("Hour not valid")
             return -88.88888
+
+    def get_hacked_value(self, hour):
+        if hour >= 0.0 and hour <= 23.59:
+            _, y_min, y_max = self.distribution.evaluate(x=hour)
+            upper_hacked_value = np.round(np.random.uniform(low=y_max + 0.1, high=y_max + self.tolerance),2)
+            lower_hacked_value = np.round(np.random.uniform(low=y_min - self.tolerance, high=y_min - 0.1),2)
+            ret = upper_hacked_value if np.random.rand() > 0.5 else lower_hacked_value
+            return ret
+        else:
+            print("Hour not valid")
+            return -88.88888
+
+
+
 
 class LightSensor(Sensor):
     def __init__(self, name, tolerance):

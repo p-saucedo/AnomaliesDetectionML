@@ -1,0 +1,20 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <h1>DataValidator of the RPi module</h1>
+</head>
+<body>
+    <form action="/create_data" method="post">
+      <div class="form-group">
+        <label for="dataQuantity">Quantity of data to be generated</label>
+        <input type="text" class="form-control" id="dataQuantity" name="dataQuantity">
+      </div>
+      <div class="form-group">
+        <label for="anomalousProbability">Probability of anomalous data</label>
+        <input type="text" class="form-control" id="anomalousProbability" name="anomalousProbability">
+      </div>
+        <button type="submit" class="btn btn-primary">Generate data</button>
+    </form>
+
+</body>
+</html>
