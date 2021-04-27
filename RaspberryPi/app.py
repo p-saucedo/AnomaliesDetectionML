@@ -4,6 +4,7 @@ import numpy as np
 from utils import *
 
 app = Flask(__name__)
+STARTING_TIME = "00:00"
 
 def create_rpi():
     rpi = RPi()
@@ -40,8 +41,11 @@ def generate_data():
     l_sensors = [s.name for s in rpi.get_sensors()]
     data = {}
     x_values = []
+    labels = []
+
+    data['sensors'] = {}
     for sensor in l_sensors:
-        time = "12:25"
+        time = STARTING_TIME
         values = []
 
         probs = np.random.rand(d_quantity) * 100
@@ -51,16 +55,19 @@ def generate_data():
                 values.append(s[sensor])
                 if sensor == l_sensors[0]:
                     x_values.append(s['hour_transformed'])
+                    labels.append(1)
             else:
                 s = rpi.sense(hour=time)
                 values.append(s[sensor])
                 if sensor == l_sensors[0]:
                     x_values.append(s['hour_transformed'])
+                    labels.append(0)
 
             time = add_minutes_to_time(time,minutes_to_add=5)
-        data[sensor] = values
+        data['sensors'][sensor] = values
 
     data['x_values'] = x_values
+    data['labels'] = labels
 
     return jsonify(data)
 
