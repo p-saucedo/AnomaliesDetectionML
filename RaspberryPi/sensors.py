@@ -41,8 +41,8 @@ class Sensor():
     def get_hacked_value(self, hour):
         if hour >= 0.0 and hour < 24.0:
             _, y_min, y_max = self.distribution.evaluate(x=hour)
-            upper_hacked_value = np.round(np.random.uniform(low=y_max + 0.1 + self.tolerance, high=y_max + (2*self.tolerance)),2)
-            lower_hacked_value = np.round(np.random.uniform(low=y_min - (2*self.tolerance), high=y_min - 0.1 - self.tolerance),2)
+            upper_hacked_value = np.round(np.random.uniform(low=y_max + 0.1 + (1.5*self.tolerance), high=y_max + (2.5*self.tolerance)),2)
+            lower_hacked_value = np.round(np.random.uniform(low=y_min - (2.5*self.tolerance), high=y_min - 0.1 - (1.5*self.tolerance)),2)
             ret = upper_hacked_value if np.random.rand() > 0.5 else lower_hacked_value
             return ret
         else:

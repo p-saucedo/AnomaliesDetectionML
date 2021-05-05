@@ -9,7 +9,7 @@ STARTING_TIME = "00:00"
 def create_rpi():
     rpi = RPi()
     rpi.add_sensor("LIGHT_SENSOR", "lightsensor", 2)
-    rpi.add_sensor("TEMPERATURE_SENSOR", "temperaturesensor", 2)
+    #rpi.add_sensor("TEMPERATURE_SENSOR", "temperaturesensor", 2)
     return rpi
 
 global rpi
@@ -70,6 +70,18 @@ def generate_data():
     data['labels'] = labels
 
     return jsonify(data)
+
+@app.route('/sense_real_data')
+def sense_real_data():
+    global rpi
+    ret = rpi.sense()
+    return ret
+
+@app.route('/sense_anomalous_data')
+def sense_anomalous_data():
+    global rpi
+    ret = rpi.hacked_sense()
+    return ret
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)

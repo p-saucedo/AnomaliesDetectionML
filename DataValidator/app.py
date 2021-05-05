@@ -5,12 +5,15 @@ import requests
 import matplotlib.pyplot as plt
 import json
 import pandas as pd
+from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import OneClassSVM
 import numpy as np
 
 
 app = Flask(__name__)
+global ml_model
+ml_model = None
 
 @app.route('/')
 def index():
@@ -34,7 +37,7 @@ def create_data():
     with open('static/data/data.json', 'w+') as fp:
         json.dump(ret.json(), fp, indent=4)
 
-    create_img(data = ret.json())
+    #create_img(data = ret.json())
 
     return render_template('visualization.html')
 
@@ -52,12 +55,51 @@ def detect_anomalies():
     df = pd.DataFrame(df_creator)
 
     data_t = df[['hour','lightsensor']]
-    model = OneClassSVM(nu=0.1, kernel="rbf", gamma=0.01)
+    model = IsolationForest(contamination='auto')
     model.fit(data_t)
+
+    global ml_model
+    ml_model = model
+
     preds = model.predict(data_t)
-    print(preds)
-    print(df_creator['label'])
-    return render_template('visualization.html')
+    print(data_t)
+
+    for i, pred in enumerate(preds):
+        if pred == -1:
+            plt.plot(data_t.iloc[i,0],data_t.iloc[i,1],'ro')
+    plt.plot(data_t.hour, data_t.lightsensor, '.')
+
+    plt.savefig('static/imgs/prediction.png')
+
+
+    return render_template('predictions.html')
+
+@app.route('/get_real_data')
+def get_real_data():
+    url = 'http://127.0.0.1:5001/sense_real_data'
+    ret = requests.get(url)
+
+    ret_json = ret.json()
+    hour = ret_json['hour_transformed']
+    X_pred = [[hour, ret_json['lightsensor']]]
+
+    global ml_model
+    prediction = ml_model.predict(X_pred)
+
+    print(prediction)
+
+@app.route('/get_anomalous_data')
+def get_anomalous_data():
+    url = 'http://127.0.0.1:5001/sense_anomalous_data'
+    ret = requests.get(url)
+    ret_json = ret.json()
+    hour = ret_json['hour_transformed']
+    X_pred = [[hour, ret_json['lightsensor']]]
+
+    global ml_model
+    prediction = ml_model.predict(X_pred)
+
+    print(prediction)
 
 def create_img(data, preds = None):
     x_values = data['x_values']
