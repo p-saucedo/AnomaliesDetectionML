@@ -7,5 +7,12 @@
     <img src="{{url_for('static', filename='imgs/prediction.png')}}" class="rounded mx-auto d-block" alt="...">
     <a class="btn btn-primary" href="/get_real_data" role="button">Simulate real data</a>
     <a class="btn btn-primary" href="/get_anomalous_data" role="button">Simulate anomalous data</a>
+
+    {% if text %}
+        <h3>{{text}}</h3>
+    {% endif %}
+    {% if values %}
+        <h3>{{values}}</h3>
+    {% endif %}
 </body>
 </html>

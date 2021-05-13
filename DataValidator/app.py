@@ -2,6 +2,8 @@ import json
 
 from flask import Flask, render_template, request
 import requests
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import json
 import pandas as pd
@@ -37,7 +39,7 @@ def create_data():
     with open('static/data/data.json', 'w+') as fp:
         json.dump(ret.json(), fp, indent=4)
 
-    #create_img(data = ret.json())
+    create_img(data = ret.json())
 
     return render_template('visualization.html')
 
@@ -62,7 +64,6 @@ def detect_anomalies():
     ml_model = model
 
     preds = model.predict(data_t)
-    print(data_t)
 
     for i, pred in enumerate(preds):
         if pred == -1:
@@ -85,8 +86,10 @@ def get_real_data():
 
     global ml_model
     prediction = ml_model.predict(X_pred)
-
-    print(prediction)
+    prediction_result = "REAL DATA" if prediction[0] == 1 else "ANOMALOUS DATA"
+    text = "    Sent: REAL DATA, Validator result: {}".format(prediction_result)
+    values ="    Value sent: {}".format(X_pred[0])
+    return render_template('predictions.html', text= text, values = values)
 
 @app.route('/get_anomalous_data')
 def get_anomalous_data():
@@ -98,8 +101,10 @@ def get_anomalous_data():
 
     global ml_model
     prediction = ml_model.predict(X_pred)
-
-    print(prediction)
+    prediction_result = "REAL DATA" if prediction[0] == 1 else "ANOMALOUS DATA"
+    text = "    Sent: ANOMALOUS DATA, Validator result: {}".format(prediction_result)
+    values = "    Value sent: {}".format(X_pred[0])
+    return render_template('predictions.html', text= text, values = values)
 
 def create_img(data, preds = None):
     x_values = data['x_values']
